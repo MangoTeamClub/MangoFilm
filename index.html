@@ -6,13 +6,23 @@
     <title>Mango超清会员视频解析</title>
     <style>
         :root {
-            --primary-color: #FFC300; /* 芒果黄主色 */
-            --primary-dark: #FFA000; /* 深芒果黄 */
+            --primary-color: #FFC300;
+            --primary-dark: #FFA000;
             --dark-bg: #121212;
             --darker-bg: #0a0a0a;
             --card-bg: #1e1e1e;
             --text-color: #e0e0e0;
             --text-muted: #888;
+        }
+        
+        .light-mode {
+            --primary-color: #FF8C00;
+            --primary-dark: #E67E00;
+            --dark-bg: #f5f5f5;
+            --darker-bg: #e0e0e0;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+            --text-muted: #666;
         }
         
         body {
@@ -25,13 +35,23 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        
+        #particles-js {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
         }
         
         .container {
             width: 90%;
-            max-width: 1000px; /* 缩小最大宽度，更简洁 */
+            max-width: 1000px;
             margin: 2rem auto;
             padding: 0 1rem;
+            position: relative;
+            z-index: 1;
         }
         
         header {
@@ -55,11 +75,13 @@
         }
         
         .search-box {
-            background: var(--darker-bg);
+            background: var(--card-bg);
             border-radius: 8px;
             padding: 1.5rem;
             margin-bottom: 2rem;
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease, border-color 0.3s ease;
         }
         
         .search-controls {
@@ -73,7 +95,7 @@
             padding: 12px 20px;
             border: none;
             border-radius: 6px;
-            background: rgba(255, 255, 255, 0.08);
+            background: rgba(0, 0, 0, 0.05);
             color: var(--text-color);
             font-size: 1rem;
             transition: all 0.2s ease;
@@ -82,7 +104,7 @@
         
         .search-input:focus {
             outline: none;
-            background: rgba(255, 255, 255, 0.12);
+            background: rgba(0, 0, 0, 0.08);
             border-bottom: 2px solid var(--primary-color);
         }
         
@@ -96,7 +118,7 @@
             padding: 12px 15px;
             border: none;
             border-radius: 6px;
-            background: rgba(255, 255, 255, 0.08);
+            background: rgba(0, 0, 0, 0.05);
             color: var(--text-color);
             font-size: 1rem;
             appearance: none;
@@ -107,7 +129,7 @@
         
         select:focus {
             outline: none;
-            background: rgba(255, 255, 255, 0.12);
+            background: rgba(0, 0, 0, 0.08);
             border-bottom: 2px solid var(--primary-color);
         }
         
@@ -146,7 +168,7 @@
         .engine-info {
             margin-top: 1rem;
             padding: 1rem;
-            background: rgba(0, 0, 0, 0.3);
+            background: rgba(0, 0, 0, 0.1);
             border-radius: 6px;
             font-size: 0.9rem;
             color: var(--text-muted);
@@ -158,7 +180,7 @@
             width: 100%;
             border-radius: 8px;
             overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.1);
             position: relative;
         }
         
@@ -192,7 +214,6 @@
             color: #000;
         }
         
-        /* 弹窗样式 */
         .modal {
             display: none;
             position: fixed;
@@ -213,7 +234,7 @@
             width: 90%;
             max-width: 500px;
             position: relative;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(0, 0, 0, 0.1);
             animation: modalFadeIn 0.3s ease-out;
         }
         
@@ -277,7 +298,6 @@
             padding: 1rem 0;
         }
         
-        /* 快捷入口样式 */
         .quick-access-btn {
             position: fixed;
             left: 20px;
@@ -321,7 +341,7 @@
             width: 90%;
             max-width: 500px;
             position: relative;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(0, 0, 0, 0.1);
             animation: modalFadeIn 0.3s ease-out;
         }
         
@@ -359,16 +379,16 @@
             align-items: center;
             justify-content: center;
             padding: 15px 10px;
-            background: rgba(255, 255, 255, 0.08);
+            background: rgba(0, 0, 0, 0.08);
             border-radius: 6px;
             color: var(--text-color);
             text-decoration: none;
             transition: all 0.2s ease;
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.05);
         }
         
         .site-btn:hover {
-            background: rgba(255, 255, 255, 0.15);
+            background: rgba(0, 0, 0, 0.15);
             transform: translateY(-2px);
         }
         
@@ -379,6 +399,30 @@
         
         .site-name {
             font-size: 14px;
+        }
+        
+        /* 主题切换按钮样式 */
+        .theme-toggle {
+            position: fixed;
+            right: 20px;
+            top: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            color: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            cursor: pointer;
+            z-index: 999;
+            transition: all 0.2s ease;
+            border: none;
+        }
+        
+        .theme-toggle:hover {
+            transform: scale(1.05);
         }
         
         @media (max-width: 768px) {
@@ -402,11 +446,19 @@
                 grid-template-columns: repeat(2, 1fr);
             }
             
-            .quick-access-btn {
+            .quick-access-btn, .theme-toggle {
                 width: 40px;
                 height: 40px;
                 font-size: 16px;
+            }
+            
+            .quick-access-btn {
                 left: 15px;
+                top: 15px;
+            }
+            
+            .theme-toggle {
+                right: 15px;
                 top: 15px;
             }
         }
@@ -414,12 +466,18 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
-    <!-- 悬浮按钮 -->
+    <!-- 粒子容器 -->
+    <div id="particles-js"></div>
+    
+    <!-- 主题切换按钮 -->
+    <button class="theme-toggle" id="themeToggle">
+        <i class="fas fa-moon"></i>
+    </button>
+    
     <button class="quick-access-btn" id="sitesBtn">
         <i class="fas fa-play"></i>
     </button>
     
-    <!-- 视频网站弹窗 -->
     <div id="sitesModal" class="sites-modal">
         <div class="sites-modal-content">
             <span class="sites-modal-close" id="sitesModalClose">&times;</span>
@@ -479,17 +537,12 @@
                 </div>
                 <button id="search-btn" class="search-btn">解析视频</button>
             </div>
-            <div id="engine-info" class="engine-info">
-                <!-- 接口说明将在这里显示 -->
-            </div>
+            <div id="engine-info" class="engine-info"></div>
         </div>
         
-        <div id="result" class="result-container">
-            <!-- 解析结果将在这里显示 -->
-        </div>
+        <div id="result" class="result-container"></div>
     </div>
 
-    <!-- 欢迎弹窗 -->
     <div id="welcomeModal" class="modal">
         <div class="modal-content">
             <span class="close" id="closeWelcomeBtn">&times;</span>
@@ -501,7 +554,6 @@
         </div>
     </div>
 
-    <!-- 免责声明-->
     <div id="disclaimerModal" class="modal">
         <div class="modal-content">
             <span class="close" id="closeDisclaimerBtn">&times;</span>
@@ -531,17 +583,148 @@
         &copy; ©2022-2025 Mango | 仅供学习交流使用，切勿滥用！
     </footer>
 
+    <!-- 引入粒子库 -->
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    
     <script>
-        // 获取弹窗元素
+        // 初始化粒子效果
+        document.addEventListener('DOMContentLoaded', function() {
+            particlesJS('particles-js', {
+                particles: {
+                    number: {
+                        value: 80,
+                        density: {
+                            enable: true,
+                            value_area: 800
+                        }
+                    },
+                    color: {
+                        value: document.body.classList.contains('light-mode') ? '#333333' : '#ffffff'
+                    },
+                    shape: {
+                        type: 'circle',
+                        stroke: {
+                            width: 0,
+                            color: '#000000'
+                        }
+                    },
+                    opacity: {
+                        value: 0.5,
+                        random: true,
+                        anim: {
+                            enable: true,
+                            speed: 1,
+                            opacity_min: 0.1,
+                            sync: false
+                        }
+                    },
+                    size: {
+                        value: 3,
+                        random: true,
+                        anim: {
+                            enable: true,
+                            speed: 2,
+                            size_min: 0.1,
+                            sync: false
+                        }
+                    },
+                    line_linked: {
+                        enable: true,
+                        distance: 150,
+                        color: document.body.classList.contains('light-mode') ? '#333333' : '#ffffff',
+                        opacity: 0.4,
+                        width: 1
+                    },
+                    move: {
+                        enable: true,
+                        speed: 2,
+                        direction: 'none',
+                        random: true,
+                        straight: false,
+                        out_mode: 'out',
+                        bounce: false
+                    }
+                },
+                interactivity: {
+                    detect_on: 'canvas',
+                    events: {
+                        onhover: {
+                            enable: true,
+                            mode: 'grab'
+                        },
+                        onclick: {
+                            enable: true,
+                            mode: 'push'
+                        },
+                        resize: true
+                    },
+                    modes: {
+                        grab: {
+                            distance: 140,
+                            line_linked: {
+                                opacity: 1
+                            }
+                        },
+                        push: {
+                            particles_nb: 4
+                        }
+                    }
+                },
+                retina_detect: true
+            });
+        });
+
+        // 主题切换功能
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = themeToggle.querySelector('i');
+        
+        // 检查本地存储中的主题设置
+        const currentTheme = localStorage.getItem('theme') || 'dark';
+        
+        // 应用保存的主题
+        if (currentTheme === 'light') {
+            document.body.classList.add('light-mode');
+            themeIcon.className = 'fas fa-sun';
+        } else {
+            document.body.classList.remove('light-mode');
+            themeIcon.className = 'fas fa-moon';
+        }
+        
+        // 切换主题
+        themeToggle.addEventListener('click', function() {
+            document.body.classList.toggle('light-mode');
+            
+            if (document.body.classList.contains('light-mode')) {
+                themeIcon.className = 'fas fa-sun';
+                localStorage.setItem('theme', 'light');
+                
+                // 更新粒子颜色
+                if (window.pJSDom && window.pJSDom[0]) {
+                    window.pJSDom[0].pJS.particles.color.value = '#333333';
+                    window.pJSDom[0].pJS.particles.line_linked.color = '#333333';
+                    window.pJSDom[0].pJS.fn.particlesRefresh();
+                }
+            } else {
+                themeIcon.className = 'fas fa-moon';
+                localStorage.setItem('theme', 'dark');
+                
+                // 更新粒子颜色
+                if (window.pJSDom && window.pJSDom[0]) {
+                    window.pJSDom[0].pJS.particles.color.value = '#ffffff';
+                    window.pJSDom[0].pJS.particles.line_linked.color = '#ffffff';
+                    window.pJSDom[0].pJS.fn.particlesRefresh();
+                }
+            }
+        });
+
+        // 原有的其他JavaScript代码
         var welcomeModal = document.getElementById("welcomeModal");
         var disclaimerModal = document.getElementById("disclaimerModal");
         var clipboardModal = document.getElementById("clipboardModal");
         
-        // 显示欢迎弹窗
         window.onload = function() {
             welcomeModal.style.display = "block";
             
-            // 检查是否已经同意免责声明
             if (!localStorage.getItem('disclaimerAgreed')) {
                 setTimeout(() => {
                     disclaimerModal.style.display = "block";
@@ -549,7 +732,6 @@
             }
         };
         
-        // 关闭弹窗的功能
         document.getElementById("closeWelcomeBtn").onclick = function() {
             welcomeModal.style.display = "none";
         };
@@ -567,7 +749,6 @@
             disclaimerModal.style.display = "none";
         };
         
-        // 点击弹窗外部区域也可以关闭弹窗
         window.onclick = function(event) {
             if (event.target == welcomeModal) {
                 welcomeModal.style.display = "none";
@@ -580,28 +761,21 @@
             }
         };
         
-        // 接口说明信息
         const engineDescriptions = {
             "https://z1.m1907.top/?jx=": "通过视频名称搜索，支持各大平台视频",
             "https://jx.nnxv.cn/tv.php?url=": "有广告解析接口，推荐使用",
-             "https://jx.2s0.cn/player/?url=": "万能无广告解析接口2，推荐使用",
-            "https://www.yemu.xyz/?url=": "万能无广告解析接口，推荐使用",
-             "https://jx.xyflv.cc/?url=": "无广告解析接口2",
-            
+            "https://jx.2s0.cn/player/?url=": "万能无广告解析接口2，推荐使用"
         };
         
         const engineSelect = document.getElementById('search-engine');
         const engineInfo = document.getElementById('engine-info');
         
-        // 当前选中的接口
         let currentEngine = engineSelect.value;
         
-        // 显示接口说明
         function showEngineInfo() {
             engineInfo.textContent = engineDescriptions[engineSelect.value];
             engineInfo.style.display = 'block';
             
-            // 10秒后自动隐藏
             setTimeout(() => {
                 if (engineSelect.value === currentEngine) {
                     engineInfo.style.display = 'none';
@@ -609,7 +783,6 @@
             }, 10000);
         }
         
-        // 接口切换事件
         engineSelect.addEventListener('focus', () => {
             showEngineInfo();
         });
@@ -627,9 +800,7 @@
             }, 200);
         });
         
-        // 搜索功能
         document.getElementById('search-btn').addEventListener('click', function() {
-            // 检查是否已同意免责声明
             if (!localStorage.getItem('disclaimerAgreed')) {
                 disclaimerModal.style.display = "block";
                 return;
@@ -643,18 +814,14 @@
                 return;
             }
             
-            // 构建搜索URL
             const searchUrl = engine + encodeURIComponent(query);
             
-            // 清空结果区域
             document.getElementById('result').innerHTML = '';
             
-            // 创建一个iframe来展示搜索结果
             const iframe = document.createElement('iframe');
             iframe.src = searchUrl;
             iframe.allowFullscreen = true;
             
-            // 创建全屏按钮
             const fullscreenBtn = document.createElement('button');
             fullscreenBtn.className = 'fullscreen-btn';
             fullscreenBtn.innerHTML = '<i class="fas fa-expand"></i>';
@@ -670,23 +837,19 @@
                 }
             });
             
-            // 将iframe和全屏按钮添加到结果区域
             const resultContainer = document.getElementById('result');
             resultContainer.appendChild(iframe);
             resultContainer.appendChild(fullscreenBtn);
             
-            // 滚动到结果区域
             resultContainer.scrollIntoView({ behavior: 'smooth' });
         });
         
-        // 回车键触发搜索
         document.getElementById('search-input').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 document.getElementById('search-btn').click();
             }
         });
         
-        // 视频网站快捷入口功能
         const sitesBtn = document.getElementById('sitesBtn');
         const sitesModal = document.getElementById('sitesModal');
         const sitesModalClose = document.getElementById('sitesModalClose');
@@ -713,4 +876,3 @@
     </script>
 </body>
 </html>
-
