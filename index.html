@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mango超清会员视频解析</title>
+    <title>Mango影视</title>
     <style>
         :root {
             --primary-color: #FFC300;
@@ -23,6 +23,10 @@
             --card-bg: #ffffff;
             --text-color: #333333;
             --text-muted: #666;
+        }
+        
+        * {
+            box-sizing: border-box;
         }
         
         body {
@@ -182,6 +186,7 @@
             overflow: hidden;
             border: 1px solid rgba(0, 0, 0, 0.1);
             position: relative;
+            margin-bottom: 2rem;
         }
         
         iframe {
@@ -189,6 +194,20 @@
             height: 600px;
             border: none;
             background: var(--darker-bg);
+        }
+        
+        .video-player {
+            width: 100%;
+            height: 600px;
+            background: var(--darker-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .video-player video {
+            max-width: 100%;
+            max-height: 100%;
         }
         
         .fullscreen-btn {
@@ -425,6 +444,27 @@
             transform: scale(1.05);
         }
         
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .loading-spinner {
+            border: 4px solid rgba(255, 195, 0, 0.3);
+            border-radius: 50%;
+            border-top: 4px solid var(--primary-color);
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
         @media (max-width: 768px) {
             .search-controls {
                 flex-direction: column;
@@ -438,7 +478,7 @@
                 font-size: 1.8rem;
             }
             
-            iframe {
+            iframe, .video-player {
                 height: 400px;
             }
             
@@ -532,12 +572,18 @@
                     <select id="search-engine">
                         <option value="https://jx.2s0.cn/player/?url=">万能解析（推荐，不支持横屏）</option>
                         <option value="https://z1.m1907.top/?jx=">名字搜索（支持短剧，支持横屏）</option>
-                        <option value="https://jx.nnxv.cn/tv.php?url=">有广告解析（支持横屏）</option>                 
+                        <option value="https://jx.nnxv.cn/tv.php?url=">有广告解析（支持横屏）</option>
+                        <option value="https://api.jkyai.top/API/jhspjx.php?url=">聚合解析接口（MP4直链）</option>                  
                     </select>
                 </div>
                 <button id="search-btn" class="search-btn">解析视频</button>
             </div>
             <div id="engine-info" class="engine-info"></div>
+        </div>
+        
+        <div class="loading" id="loading">
+            <div class="loading-spinner"></div>
+            <p>正在解析视频，请稍候...</p>
         </div>
         
         <div id="result" class="result-container"></div>
@@ -764,7 +810,8 @@
         const engineDescriptions = {
             "https://z1.m1907.top/?jx=": "通过视频名称搜索，支持各大平台视频",
             "https://jx.nnxv.cn/tv.php?url=": "有广告解析接口，推荐使用",
-            "https://jx.2s0.cn/player/?url=": "万能无广告解析接口2，推荐使用"
+            "https://jx.2s0.cn/player/?url=": "万能无广告解析接口2，推荐使用",
+            "https://api.jkyai.top/API/jhspjx.php?url=": "聚合解析接口，返回MP4直链"
         };
         
         const engineSelect = document.getElementById('search-engine');
@@ -814,34 +861,104 @@
                 return;
             }
             
-            const searchUrl = engine + encodeURIComponent(query);
+            // 显示加载动画
+            document.getElementById('loading').style.display = 'block';
             
+            // 清空结果容器
             document.getElementById('result').innerHTML = '';
             
-            const iframe = document.createElement('iframe');
-            iframe.src = searchUrl;
-            iframe.allowFullscreen = true;
-            
-            const fullscreenBtn = document.createElement('button');
-            fullscreenBtn.className = 'fullscreen-btn';
-            fullscreenBtn.innerHTML = '<i class="fas fa-expand"></i>';
-            fullscreenBtn.title = '全屏播放';
-            
-            fullscreenBtn.addEventListener('click', function() {
-                if (iframe.requestFullscreen) {
-                    iframe.requestFullscreen();
-                } else if (iframe.webkitRequestFullscreen) {
-                    iframe.webkitRequestFullscreen();
-                } else if (iframe.msRequestFullscreen) {
-                    iframe.msRequestFullscreen();
-                }
-            });
-            
-            const resultContainer = document.getElementById('result');
-            resultContainer.appendChild(iframe);
-            resultContainer.appendChild(fullscreenBtn);
-            
-            resultContainer.scrollIntoView({ behavior: 'smooth' });
+            // 处理聚合解析接口
+            if (engine === 'https://api.jkyai.top/API/jhspjx.php?url=') {
+                const apiUrl = engine + encodeURIComponent(query);
+                
+                fetch(apiUrl)
+                    .then(response => response.json())
+                    .then(data => {
+                        // 隐藏加载动画
+                        document.getElementById('loading').style.display = 'none';
+                        
+                        // 检查是否有video字段
+                        if (data.video) {
+                            const videoUrl = data.video;
+                            
+                            // 创建视频播放器
+                            const videoPlayer = document.createElement('div');
+                            videoPlayer.className = 'video-player';
+                            
+                            const video = document.createElement('video');
+                            video.controls = true;
+                            video.src = videoUrl;
+                            video.style.maxWidth = '100%';
+                            video.style.maxHeight = '100%';
+                            
+                            videoPlayer.appendChild(video);
+                            
+                            const fullscreenBtn = document.createElement('button');
+                            fullscreenBtn.className = 'fullscreen-btn';
+                            fullscreenBtn.innerHTML = '<i class="fas fa-expand"></i>';
+                            fullscreenBtn.title = '全屏播放';
+                            
+                            fullscreenBtn.addEventListener('click', function() {
+                                if (video.requestFullscreen) {
+                                    video.requestFullscreen();
+                                } else if (video.webkitRequestFullscreen) {
+                                    video.webkitRequestFullscreen();
+                                } else if (video.msRequestFullscreen) {
+                                    video.msRequestFullscreen();
+                                }
+                            });
+                            
+                            const resultContainer = document.getElementById('result');
+                            resultContainer.appendChild(videoPlayer);
+                            resultContainer.appendChild(fullscreenBtn);
+                            
+                            resultContainer.scrollIntoView({ behavior: 'smooth' });
+                        } else {
+                            alert('解析失败，未找到视频链接');
+                        }
+                    })
+                    .catch(error => {
+                        // 隐藏加载动画
+                        document.getElementById('loading').style.display = 'none';
+                        
+                        console.error('Error:', error);
+                        alert('解析失败，请重试');
+                    });
+            } else {
+                // 其他接口的处理方式
+                const searchUrl = engine + encodeURIComponent(query);
+                
+                const iframe = document.createElement('iframe');
+                iframe.src = searchUrl;
+                iframe.allowFullscreen = true;
+                
+                // 添加加载完成事件
+                iframe.onload = function() {
+                    // 隐藏加载动画
+                    document.getElementById('loading').style.display = 'none';
+                };
+                
+                const fullscreenBtn = document.createElement('button');
+                fullscreenBtn.className = 'fullscreen-btn';
+                fullscreenBtn.innerHTML = '<i class="fas fa-expand"></i>';
+                fullscreenBtn.title = '全屏播放';
+                
+                fullscreenBtn.addEventListener('click', function() {
+                    if (iframe.requestFullscreen) {
+                        iframe.requestFullscreen();
+                    } else if (iframe.webkitRequestFullscreen) {
+                        iframe.webkitRequestFullscreen();
+                    } else if (iframe.msRequestFullscreen) {
+                        iframe.msRequestFullscreen();
+                    }
+                });
+                
+                const resultContainer = document.getElementById('result');
+                resultContainer.appendChild(iframe);
+                resultContainer.appendChild(fullscreenBtn);
+                
+                resultContainer.scrollIntoView({ behavior: 'smooth' });
+            }
         });
         
         document.getElementById('search-input').addEventListener('keypress', function(e) {
